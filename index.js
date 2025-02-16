@@ -2,8 +2,6 @@
 
 const { spawn } = require('child_process');
 const { logo, warna } = require('./hady-zen/log');
-global.Syntora = global.Syntora || {};
-global.Syntora.config = require("./config.json");
 
 function hady() {
   const child = spawn("node Syntora.js", {
