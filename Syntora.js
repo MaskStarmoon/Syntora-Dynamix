@@ -10,6 +10,7 @@
  const akun = fs.readFileSync('akun.txt', 'utf8');
  const { log_bhs, code_bhs } = require('./bahasa/bahasa');
  const { awalan, nama, admin, proxy, port, notifKey, setting } = require('./config.json');
+ global.Syntora = {};
  global.Syntora.config = require("./config.json");
  const { kuldown } = require('./hady-zen/kuldown');
  const { getData, createData, setData } = require('./database/db-konek.js');
@@ -30,7 +31,7 @@ async function loadC() {
   fs.readFileSync('config.json');
 }
 setInterval(function() { loadC(); }, 30000);
-if (!akun || akun.length < 0) return console.log(logo.error + 'Harap masukkan cookie terlebih dahulu.');
+if (!akun || akun.length < 0) { console.log(logo.error + 'Harap masukkan cookie terlebih dahulu.'); }
 const zen = { host: proxy, port: port };
 login({appState: JSON.parse(akun, zen)}, setting, (err, api) => {
    if(err) { 
@@ -41,11 +42,11 @@ login({appState: JSON.parse(akun, zen)}, setting, (err, api) => {
    api.setOptions({listenEvents: true});
 console.log(logo.login + 'Mulai menerima pesan dari pengguna.');
 	  
-   api.listenMqtt((err, event) => {
+   api.listenMqtt(async (err, event) => {
    const body = event.body;
    const real_id = event.senderID;
 try {
-      const userData = await getData(real_id);
+      const userData = await Syntora.getData(real_id);
       if (userData && userData.banned === 1) {
         console.log(logo.warn + `User ${real_id} dibanned, tidak merespons.`);
         return;
@@ -95,14 +96,14 @@ if (!body.startsWith(awalan) || body == " ") return console.log(logo.pesan + `${
    if (kuldown(event.senderID, config.nama, config.kuldown) == 'hadi') { 
 	   
 if (config.peran == 0 || !config.peran) {
-    await Alya({ api, event, args, bhs, Syntora.getData, Syntora.setData });
+    await Alya({ api, event, args, bhs, getData: Syntora.getData, setData: Syntora.setData });
     return;
 }
 if ((config.peran == 2 || config.peran == 1) && admin.includes(event.senderID) || config.peran == 0) {
-    await Alya({ api, event, args, bhs, Syntora.getData, Syntora.setData });
+    await Alya({ api, event, args, bhs, getData: Syntora.getData, setData: Syntora.setData });
     return;
 } else if (config.peran == 1 && ff.includes(event.senderID) || config.peran == 0) {
-    await Alya({ api, event, args, bhs, Syntora.getData, Syntora.setData });
+    await Alya({ api, event, args, bhs, getData: Syntora.getData, setData: Syntora.setData });
     return;
 } else { 
     api.setMessageReaction("❕", event.messageID);
