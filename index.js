@@ -1,4 +1,4 @@
-/* HADY ZEN'IN ediy by Range*/
+/* HADY ZEN'IN ediy by Range */
 const { spawn } = require('child_process');
 const { logo, warna } = require('./hady-zen/log');
 
